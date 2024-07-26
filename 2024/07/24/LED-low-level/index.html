@@ -224,17 +224,17 @@
         <section class="flex items-center gap-3 text-sm">
           <span class="flex items-center gap-1">
             <iconify-icon width="18" icon="carbon-calendar" ></iconify-icon>
-            <time>2024-07-24</time>
+            <time>2024-07-26</time>
           </span>
           <span class="text-gray-400">·</span>
           <span class="flex items-center gap-1">
             <iconify-icon width="18" icon="ic:round-access-alarm" ></iconify-icon>
-            <span>1 min</span>
+            <span>2 min</span>
           </span>
           <span class="text-gray-400">·</span>
           <span class="flex items-center gap-1">
             <iconify-icon width="18" icon="icon-park-outline:font-search" ></iconify-icon>
-            <span>34 words</span>
+            <span>465 words</span>
           </span>
           
         </section>
@@ -246,11 +246,34 @@
     <blockquote>
 <p>Two challenges<br>performance &amp; control</p>
 </blockquote>
-<h2 id="Problem1-Restricted-Operations"><a href="#Problem1-Restricted-Operations" class="headerlink" title="Problem1: Restricted Operations"></a>Problem1: Restricted Operations</h2><p>The hardware provides different modes of execution, user mode and kernel mode.</p>
+<h2 id="Problem1-Restricted-Operations"><a href="#Problem1-Restricted-Operations" class="headerlink" title="Problem1: Restricted Operations"></a>Problem1: Restricted Operations</h2><p>The hardware provides different execution modes, such as user and kernel modes.</p>
 <ul>
 <li>user mode<br>  code’s running is restricted.</li>
-<li>kernel mode<br>  code can run what it want to.</li>
+<li>kernel mode<br>  code can run what it wants to.<blockquote>
+<p>To execute a system call, a program must execute a <code>trap</code> instruction.</p>
+<p>When the system call is finished, the OS calls a ‘return-from-trap’ instruction.</p>
+</blockquote>
+</li>
 </ul>
+<p><strong>Timeline: summarizes the protocol</strong></p>
+<p>At boot time,  the machine is in kernel mode, the OS will be initialing the trap table. The hardware will be executing some action, such as store system call handlers… </p>
+<p>At OS running, at first, the OS executes some needed actions to run a process, process creation, allocate memory, and so on. Until execute <code>return-from-trap</code> instruction, the hardware will be restored regs from the kernel stack, move to user mode, and jump to main. Then the user program runs in user mode. When it calls the system call, and <code>trap</code> into OS. The hardware saves some status to the kernel stack and moves to the kernel mode. Then the OS does work of the system call at the handler trap. When finished, by <code>return-from-trap</code> to bring results to the user program, the final user program executes a special <code>trap</code> instruction, such as <code>exit()</code>, and the OS frees the memory of the process, removed from the process list, and the process is over.</p>
+<h2 id="Problem2-Switching-Between-Processes"><a href="#Problem2-Switching-Between-Processes" class="headerlink" title="Problem2: Switching Between Processes"></a>Problem2: Switching Between Processes</h2><p><strong>Background:</strong></p>
+<p>The OS should decide to stop one process and start another.</p>
+<p>But, all processes run on the CPU, not the OS. So, how can the operating system regain control of the CPU so that it can switch between processes?</p>
+<p><strong>In a cooperative scheduling system</strong>, the OS regains control of the CPU by waiting for a system call or an illegal operation of some kind to take place.</p>
+<h3 id="A-Non-Cooperative-Approach-The-OS-Takes-Control"><a href="#A-Non-Cooperative-Approach-The-OS-Takes-Control" class="headerlink" title="A Non-Cooperative Approach: The OS Takes Control"></a>A Non-Cooperative Approach: The OS Takes Control</h3><p>Adding a <strong>timer interrupt</strong> gives the OS the ability to run again on a CPU even if processes act in a non-cooperative fashion. </p>
+<blockquote>
+<p>The timer interrupt can be programmed to raise an interrupt every so many milliseconds, it pre-configured <strong>interrupt handler</strong> in the OS runs.</p>
+</blockquote>
+<p>Now that the OS has regained control of any conditions. Whether to continue running the currently-running process or switch to a different one. This action is made by an operating system known as the <strong>scheduler</strong>.</p>
+<p><strong>context switch</strong></p>
+<p>All the OS has to do is save a few register values for the currently-running process and restore a few for the soon-to-be-running process when switching context.</p>
+<p>**It’s good if you can describe the process by yourself. **</p>
+<blockquote>
+<p>In the final, I bought this book(<em>Operating System: Three Easy Pieces</em>) online. When I read chapter 7, I found that it didn’t have a chapter 7!!!</p>
+<p><strong>Damn it.</strong></p>
+</blockquote>
 
   </article>
   <!-- tag -->
